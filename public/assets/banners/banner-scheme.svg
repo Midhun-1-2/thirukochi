@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a0000"/>
+      <stop offset="0.5" stop-color="#6e0a0a"/>
+      <stop offset="1" stop-color="#260000"/>
+    </linearGradient>
+    <radialGradient id="light" cx="0.8" cy="0.55" r="0.5">
+      <stop offset="0" stop-color="#F9DF32" stop-opacity="0.4"/>
+      <stop offset="0.5" stop-color="#B3871C" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#260000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="coin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF3B0"/>
+      <stop offset="0.45" stop-color="#F9DF32"/>
+      <stop offset="1" stop-color="#91640F"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B3871C"/>
+      <stop offset="1" stop-color="#5a3d08"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#91640F" stop-opacity="0"/>
+      <stop offset="0.4" stop-color="#F9DF32" stop-opacity="0.9"/>
+      <stop offset="0.6" stop-color="#FFF3B0"/>
+      <stop offset="1" stop-color="#B3871C" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="20"/></filter>
+  </defs>
+  <rect width="1600" height="700" fill="url(#bg)"/>
+  <rect width="1600" height="700" fill="url(#light)"/>
+
+  <path d="M600 560 C 900 420, 1100 680, 1600 480 L1600 700 L600 700 Z" fill="url(#ribbon)" opacity="0.35" filter="url(#blur)"/>
+  <path d="M560 600 C 900 440, 1120 700, 1600 500" fill="none" stroke="url(#ribbon)" stroke-width="3"/>
+
+  <!-- coin stacks -->
+  <g id="stack1" transform="translate(1180 470)">
+    <g>
+      <ellipse cx="0" cy="60" rx="110" ry="30" fill="url(#edge)"/>
+      <rect x="-110" y="40" width="220" height="20" fill="url(#edge)"/>
+      <ellipse cx="0" cy="40" rx="110" ry="30" fill="url(#coin)"/>
+      <ellipse cx="0" cy="40" rx="86" ry="22" fill="none" stroke="#91640F" stroke-width="1.5" opacity="0.6"/>
+    </g>
+    <g transform="translate(0 -32)">
+      <ellipse cx="0" cy="60" rx="110" ry="30" fill="url(#edge)"/>
+      <rect x="-110" y="40" width="220" height="20" fill="url(#edge)"/>
+      <ellipse cx="0" cy="40" rx="110" ry="30" fill="url(#coin)"/>
+      <ellipse cx="0" cy="40" rx="86" ry="22" fill="none" stroke="#91640F" stroke-width="1.5" opacity="0.6"/>
+    </g>
+    <g transform="translate(0 -64)">
+      <ellipse cx="0" cy="60" rx="110" ry="30" fill="url(#edge)"/>
+      <rect x="-110" y="40" width="220" height="20" fill="url(#edge)"/>
+      <ellipse cx="0" cy="40" rx="110" ry="30" fill="url(#coin)"/>
+      <ellipse cx="0" cy="40" rx="86" ry="22" fill="none" stroke="#91640F" stroke-width="1.5" opacity="0.6"/>
+      <text x="0" y="48" text-anchor="middle" font-family="Georgia, serif" font-size="26" fill="#91640F" opacity="0.8">₹</text>
+    </g>
+  </g>
+
+  <g transform="translate(1420 520) scale(0.75)">
+    <g>
+      <ellipse cx="0" cy="60" rx="110" ry="30" fill="url(#edge)"/>
+      <rect x="-110" y="40" width="220" height="20" fill="url(#edge)"/>
+      <ellipse cx="0" cy="40" rx="110" ry="30" fill="url(#coin)"/>
+      <ellipse cx="0" cy="40" rx="86" ry="22" fill="none" stroke="#91640F" stroke-width="1.5" opacity="0.6"/>
+    </g>
+    <g transform="translate(0 -32)">
+      <ellipse cx="0" cy="60" rx="110" ry="30" fill="url(#edge)"/>
+      <rect x="-110" y="40" width="220" height="20" fill="url(#edge)"/>
+      <ellipse cx="0" cy="40" rx="110" ry="30" fill="url(#coin)"/>
+      <ellipse cx="0" cy="40" rx="86" ry="22" fill="none" stroke="#91640F" stroke-width="1.5" opacity="0.6"/>
+    </g>
+  </g>
+
+  <!-- standing coin -->
+  <g transform="translate(1000 400)">
+    <circle cx="0" cy="0" r="78" fill="url(#coin)"/>
+    <circle cx="0" cy="0" r="62" fill="none" stroke="#91640F" stroke-width="2" opacity="0.55"/>
+    <path d="M0 -30 L26 0 L0 30 L-26 0 Z" fill="none" stroke="#91640F" stroke-width="2" opacity="0.7"/>
+    <path d="M-40 -46 a 62 62 0 0 1 80 0" fill="none" stroke="#FFF6C2" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </g>
+
+  <g fill="#FFF6C2">
+    <path d="M900 240 l3 12 12 3 -12 3 -3 12 -3 -12 -12 -3 12 -3z"/>
+    <path d="M1320 250 l4 14 14 4 -14 4 -4 14 -4 -14 -14 -4 14 -4z"/>
+    <path d="M1500 360 l2 8 8 2 -8 2 -2 8 -2 -8 -8 -2 8 -2z"/>
+  </g>
+</svg>

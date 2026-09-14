@@ -1,0 +1,458 @@
+@import 'tailwindcss';
+
+@import '@fontsource-variable/playfair-display';
+@import '@fontsource/poppins/300.css';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+
+/* ------------------------------------------------------------------
+   THIRUKOCHI GOLD & DIAMONDS — Design tokens
+   Client palette: Maroon #540000 · Gold #91640F → #F9DF32 → #B3871C
+------------------------------------------------------------------- */
+@theme {
+  --color-maroon: #540000;
+  --color-maroon-soft: #6e0a0a;
+  --color-maroon-dark: #260000;
+  --color-maroon-deep: #160000;
+  --color-maroon-ink: #0d0000;
+
+  --color-gold-dark: #91640f;
+  --color-gold: #b3871c;
+  --color-gold-bright: #f9df32;
+  --color-gold-pale: #f5e7a3;
+  --color-gold-muted: #d3b45a;
+
+  --color-cream: #f8f8f8;
+  --color-cream-muted: rgba(248, 248, 248, 0.66);
+  --color-cream-faint: rgba(248, 248, 248, 0.42);
+
+  --color-rose: #f0a08c;
+
+  --font-display: 'Playfair Display Variable', 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+
+  --shadow-luxury: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --shadow-luxury-lg: 0 30px 90px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 12px 34px rgba(249, 223, 50, 0.16);
+  --shadow-gold-strong: 0 0 0 1px rgba(249, 223, 50, 0.35), 0 12px 40px rgba(249, 223, 50, 0.22);
+
+  --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --breakpoint-xs: 26rem;
+  --breakpoint-3xl: 120rem;
+
+  --animate-live-pulse: live-pulse 2.2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-spin-slow: spin 40s linear infinite;
+  --animate-orbit: orbit 14s linear infinite;
+  --animate-gold-shine: gold-shine 6s ease-in-out infinite;
+}
+
+:root {
+  /* Plain CSS aliases (for hand-written CSS & inline styles) */
+  --maroon: #540000;
+  --maroon-dark: #260000;
+  --maroon-deep: #160000;
+  --gold-dark: #91640f;
+  --gold: #b3871c;
+  --gold-bright: #f9df32;
+  --cream: #f8f8f8;
+
+  --gold-gradient: linear-gradient(135deg, #91640f 0%, #f9df32 48%, #b3871c 100%);
+  --gold-gradient-button: linear-gradient(120deg, #91640f 0%, #e8c92c 38%, #f9df32 52%, #d9b32a 70%, #b3871c 100%);
+  --gold-gradient-text: linear-gradient(110deg, #b3871c 0%, #f9df32 40%, #fbeea0 52%, #e3c33a 64%, #91640f 100%);
+  --gold-edge: linear-gradient(160deg, rgba(249, 223, 50, 0.62) 0%, rgba(179, 135, 28, 0.22) 38%, rgba(145, 100, 15, 0.14) 62%, rgba(249, 223, 50, 0.48) 100%);
+  --surface: rgba(84, 0, 0, 0.55);
+  --surface-strong: rgba(58, 0, 0, 0.82);
+  --border-gold: rgba(249, 223, 50, 0.25);
+  --border-gold-soft: rgba(249, 223, 50, 0.14);
+
+  --nav-height: 72px;
+  --bottom-nav-height: 76px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-maroon-deep);
+    color: var(--color-cream);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
+  }
+
+  #root {
+    min-height: 100dvh;
+    isolation: isolate;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-display);
+    font-variant-numeric: lining-nums;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+    border: 0;
+    background: none;
+    padding: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(249, 223, 50, 0.85);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-cream);
+    -webkit-box-shadow: 0 0 0 1000px #2b0000 inset;
+    transition: background-color 9999s ease-in-out 0s;
+    caret-color: var(--color-gold-bright);
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  ::selection {
+    background: rgba(249, 223, 50, 0.32);
+    color: var(--color-cream);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #120000;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #7a5410, #b3871c);
+    border-radius: 999px;
+    border: 3px solid #120000;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Gold material utilities
+------------------------------------------------------------------- */
+@utility gold-text {
+  background-image: var(--gold-gradient-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility gold-text-shine {
+  background-image: linear-gradient(
+    110deg,
+    #b3871c 0%,
+    #f9df32 30%,
+    #fff6c2 44%,
+    #f9df32 56%,
+    #b3871c 80%,
+    #91640f 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: gold-shine 7s ease-in-out infinite;
+}
+
+@utility gold-bg {
+  background-image: var(--gold-gradient);
+}
+
+@utility gold-bg-button {
+  background-image: var(--gold-gradient-button);
+  background-size: 160% 100%;
+  background-position: 0% 50%;
+}
+
+/* Metallic gradient hairline edge using a masked pseudo-element */
+@utility gold-edge {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gold-edge);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+@utility surface {
+  background:
+    linear-gradient(160deg, rgba(110, 10, 10, 0.42) 0%, rgba(58, 0, 0, 0.62) 55%, rgba(38, 0, 0, 0.78) 100%),
+    rgba(38, 0, 0, 0.72);
+  border: 1px solid var(--border-gold-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(249, 223, 50, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+    var(--shadow-luxury);
+}
+
+@utility surface-glass {
+  background: rgba(38, 0, 0, 0.55);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid var(--border-gold-soft);
+  box-shadow:
+    inset 0 1px 0 rgba(249, 223, 50, 0.1),
+    var(--shadow-luxury);
+}
+
+@utility surface-deep {
+  background: linear-gradient(180deg, rgba(22, 0, 0, 0.9), rgba(13, 0, 0, 0.96));
+  border: 1px solid rgba(249, 223, 50, 0.1);
+}
+
+@utility skeleton-gold {
+  position: relative;
+  overflow: hidden;
+  background: rgba(249, 223, 50, 0.07);
+  border-radius: 8px;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(249, 223, 50, 0.14) 45%,
+      rgba(249, 223, 50, 0.26) 50%,
+      rgba(249, 223, 50, 0.14) 55%,
+      transparent 100%
+    );
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility safe-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility text-pretty {
+  text-wrap: pretty;
+}
+
+@utility lining-nums {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+@utility vignette {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 40%, transparent 40%, rgba(13, 0, 0, 0.55) 100%);
+  }
+}
+
+/* Cinematic page backdrop */
+@utility bg-cinematic {
+  background-color: #160000;
+  background-image:
+    radial-gradient(90% 60% at 20% 0%, rgba(120, 18, 18, 0.55) 0%, transparent 60%),
+    radial-gradient(70% 50% at 100% 100%, rgba(145, 100, 15, 0.18) 0%, transparent 60%),
+    linear-gradient(180deg, #2a0000 0%, #160000 55%, #0d0000 100%);
+}
+
+/* Gold particle running along a card edge (decorative) */
+@utility orbit-spark {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #fff6c2 0%, #f9df32 35%, rgba(249, 223, 50, 0) 70%);
+  filter: drop-shadow(0 0 6px rgba(249, 223, 50, 0.9));
+  offset-path: inset(0 round var(--radius-lg));
+  offset-distance: 0%;
+  animation: orbit 14s linear infinite;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* ------------------------------------------------------------------
+   Keyframes
+------------------------------------------------------------------- */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes gold-shine {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 223, 50, 0.55);
+  }
+  60% {
+    box-shadow: 0 0 0 7px rgba(249, 223, 50, 0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orbit {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(3%, -4%, 0) scale(1.06);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Reduced motion
+------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

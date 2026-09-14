@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a0000"/>
+      <stop offset="0.55" stop-color="#540000"/>
+      <stop offset="1" stop-color="#2a0000"/>
+    </linearGradient>
+    <radialGradient id="light" cx="0.78" cy="0.45" r="0.5">
+      <stop offset="0" stop-color="#F9DF32" stop-opacity="0.35"/>
+      <stop offset="0.5" stop-color="#B3871C" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#540000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#91640F"/>
+      <stop offset="0.45" stop-color="#F9DF32"/>
+      <stop offset="0.6" stop-color="#FFF3B0"/>
+      <stop offset="1" stop-color="#B3871C"/>
+    </linearGradient>
+    <linearGradient id="goldv" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF3B0"/>
+      <stop offset="0.5" stop-color="#F9DF32"/>
+      <stop offset="1" stop-color="#91640F"/>
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="1.2"/></filter>
+  </defs>
+  <rect width="1600" height="700" fill="url(#bg)"/>
+  <rect width="1600" height="700" fill="url(#light)"/>
+
+  <!-- bokeh -->
+  <g fill="#F9DF32" opacity="0.18" filter="url(#blur)">
+    <circle cx="1180" cy="120" r="70"/>
+    <circle cx="1420" cy="540" r="95"/>
+    <circle cx="980" cy="600" r="50"/>
+  </g>
+
+  <!-- necklace arc with beads -->
+  <g transform="translate(1160 120)">
+    <path d="M-330 -40 C -300 260, -60 420, 0 430 C 60 420, 300 260, 330 -40" fill="none" stroke="url(#gold)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M-300 -40 C -270 240, -50 380, 0 390 C 50 380, 270 240, 300 -40" fill="none" stroke="url(#gold)" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    <g fill="url(#goldv)">
+      <circle cx="-262" cy="150" r="11"/><circle cx="-215" cy="245" r="12"/><circle cx="-150" cy="325" r="13"/><circle cx="-75" cy="385" r="14"/>
+      <circle cx="0" cy="410" r="16"/>
+      <circle cx="75" cy="385" r="14"/><circle cx="150" cy="325" r="13"/><circle cx="215" cy="245" r="12"/><circle cx="262" cy="150" r="11"/>
+    </g>
+    <!-- pendant -->
+    <g transform="translate(0 455)">
+      <path d="M0 -20 L44 20 L0 92 L-44 20 Z" fill="url(#gold)" stroke="#FFF3B0" stroke-width="1.5"/>
+      <path d="M-44 20 H44 M0 -20 L-16 20 L0 92 L16 20 Z M-22 20 L0 -20 L22 20" fill="none" stroke="#FFF6C2" stroke-width="1" opacity="0.8"/>
+      <circle cx="0" cy="-26" r="7" fill="url(#goldv)"/>
+    </g>
+  </g>
+
+  <!-- bangle -->
+  <g transform="translate(1390 470)">
+    <ellipse cx="0" cy="0" rx="120" ry="42" fill="none" stroke="url(#gold)" stroke-width="16"/>
+    <ellipse cx="0" cy="-4" rx="112" ry="36" fill="none" stroke="#FFF3B0" stroke-width="1.5" opacity="0.6" filter="url(#soft)"/>
+  </g>
+
+  <!-- sparkles -->
+  <g fill="#FFF6C2">
+    <path d="M1010 200 l3 12 12 3 -12 3 -3 12 -3 -12 -12 -3 12 -3z"/>
+    <path d="M1300 330 l2 8 8 2 -8 2 -2 8 -2 -8 -8 -2 8 -2z"/>
+    <path d="M1470 160 l4 14 14 4 -14 4 -4 14 -4 -14 -14 -4 14 -4z"/>
+  </g>
+</svg>
