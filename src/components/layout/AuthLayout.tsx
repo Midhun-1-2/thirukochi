@@ -83,15 +83,15 @@ export function AuthLayout() {
         {/* ---------------- Form column ---------------- */}
         <main className="relative flex min-h-dvh flex-col lg:min-h-0">
           {/* mobile ribbon */}
-          <GoldRibbon variant="sweep" opacity={0.55} className="top-auto -bottom-6 h-[46%] lg:hidden" flip />
+          <GoldRibbon variant="sweep" opacity={0.32} className="top-auto -bottom-8 h-[38%] lg:hidden" flip fade="top" />
 
-          <div className="relative z-10 flex flex-1 flex-col px-5 pb-10 pt-[calc(28px+var(--safe-top))] sm:px-8 lg:justify-center lg:px-12 lg:py-16 xl:px-20">
+          <div className="relative z-10 flex flex-1 flex-col px-5 pb-8 pt-[calc(20px+var(--safe-top))] sm:px-8 sm:pb-10 sm:pt-[calc(28px+var(--safe-top))] lg:justify-center lg:px-12 lg:py-16 xl:px-20">
             {/* mobile logo */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, ease: luxuryEase }}
-              className="mx-auto mb-8 lg:hidden"
+              className="mx-auto mb-6 sm:mb-8 lg:hidden"
             >
               <Logo size="md" glow priority />
             </motion.div>

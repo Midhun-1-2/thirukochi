@@ -20,7 +20,7 @@ interface GoldRibbonProps {
   /** Play the entrance draw animation. */
   draw?: boolean
   /** Soften the container edges so the band never ends in a hard cut. */
-  fade?: 'right' | 'left' | 'x' | 'none'
+  fade?: 'right' | 'left' | 'x' | 'top' | 'x-top' | 'none'
 }
 
 const fadeMasks: Record<NonNullable<GoldRibbonProps['fade']>, string | undefined> = {
@@ -28,6 +28,9 @@ const fadeMasks: Record<NonNullable<GoldRibbonProps['fade']>, string | undefined
   right: 'linear-gradient(90deg, #000 55%, transparent 100%)',
   left: 'linear-gradient(90deg, transparent 0%, #000 45%)',
   x: 'linear-gradient(90deg, transparent 0%, #000 22%, #000 78%, transparent 100%)',
+  // the band's top edge dissolves into the page instead of ending in a straight line
+  top: 'linear-gradient(180deg, transparent 0%, #000 45%)',
+  'x-top': 'linear-gradient(90deg, transparent 0%, #000 22%, #000 78%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 45%)',
 }
 
 const shapes = {
@@ -65,6 +68,9 @@ export function GoldRibbon({ className, flip, opacity = 0.75, variant = 'sweep',
         transform: flip ? 'scaleX(-1)' : undefined,
         WebkitMaskImage: fadeMasks[fade],
         maskImage: fadeMasks[fade],
+        // two masks (x + top) must both apply
+        WebkitMaskComposite: fade === 'x-top' ? 'source-in' : undefined,
+        maskComposite: fade === 'x-top' ? 'intersect' : undefined,
       }}
     >
       {/* drift is a compositor-only CSS animation: the blurred band is rasterised once */}

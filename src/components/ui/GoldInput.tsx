@@ -81,7 +81,7 @@ export const GoldInput = forwardRef<HTMLInputElement, GoldInputProps>(function G
           <span
             aria-hidden
             className={cn(
-              'pointer-events-none absolute top-[29px] text-[15px] font-medium text-gold-muted opacity-0 transition-opacity duration-200',
+              'pointer-events-none absolute inset-y-0 flex items-center pt-4 text-[15px] font-medium text-gold-muted opacity-0 transition-opacity duration-200',
               'peer-focus:opacity-100 peer-[:not(:placeholder-shown)]:opacity-100',
               hasIcon ? 'left-[46px]' : 'left-4',
             )}

@@ -2,11 +2,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
-import { ArrowRight, Phone, User } from 'lucide-react'
+import { ArrowRight, User } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { GoldButton } from '@/components/ui/GoldButton'
 import { GoldInput } from '@/components/ui/GoldInput'
-import { digitsOnly } from '@/lib/inputs'
+import { PhoneInput } from './PhoneInput'
 import { staggerContainer, staggerItem } from '@/lib/motion'
 
 /* ------------------------------------------------------------------
@@ -68,18 +68,7 @@ export function RegistrationForm({ defaultValues, onSubmit, submitting }: Regist
       </motion.div>
 
       <motion.div variants={staggerItem}>
-        <GoldInput
-          label="Phone Number"
-          icon={<Phone />}
-          prefix="+91"
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel-national"
-          maxLength={10}
-          onInput={digitsOnly}
-          error={errors.phone?.message}
-          {...register('phone')}
-        />
+        <PhoneInput error={errors.phone?.message} {...register('phone')} />
       </motion.div>
 
       <motion.div variants={staggerItem} className="pt-2">

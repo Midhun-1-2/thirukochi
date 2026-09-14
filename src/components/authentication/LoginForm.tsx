@@ -3,11 +3,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, KeyRound, Lock, Phone, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, KeyRound, Lock, ShieldCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { mockAuthConfig } from '@/data'
 import { GoldButton } from '@/components/ui/GoldButton'
 import { GoldInput } from '@/components/ui/GoldInput'
+import { PhoneInput } from './PhoneInput'
 import { IconButton } from '@/components/ui/IconButton'
 import { digitsOnly } from '@/lib/inputs'
 import { staggerContainer, staggerItem } from '@/lib/motion'
@@ -82,19 +83,7 @@ export function LoginForm({ defaultPhone = '', onSubmit, onSuccess }: LoginFormP
   return (
     <motion.form noValidate onSubmit={submit} variants={staggerContainer(0.09, 0.25)} initial="hidden" animate="show" className="flex flex-col gap-4">
       <motion.div variants={staggerItem}>
-        <GoldInput
-          label="Phone Number"
-          icon={<Phone />}
-          prefix="+91"
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel-national"
-          maxLength={10}
-          onInput={digitsOnly}
-          error={errors.phone?.message}
-          disabled={busy}
-          {...register('phone')}
-        />
+        <PhoneInput error={errors.phone?.message} disabled={busy} {...register('phone')} />
       </motion.div>
 
       <motion.div variants={staggerItem}>

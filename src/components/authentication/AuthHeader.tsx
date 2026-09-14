@@ -9,24 +9,29 @@ interface AuthHeaderProps {
   subtitle?: string
   /** 1-based step in the 3-step onboarding (Register → OTP → MPIN). */
   step?: 1 | 2 | 3
-  back?: { to: string; label: string }
+  back?: { to: string; label: string } | { onClick: () => void; label: string }
   align?: 'left' | 'center'
 }
 
 const steps = ['Register', 'Verify', 'Secure']
+const backClasses = 'group mb-3 inline-flex h-9 sm:mb-4 sm:h-10 items-center gap-2 rounded-full pr-3 text-[13px] text-gold-muted transition-colors hover:text-gold-bright'
 
 export function AuthHeader({ title, subtitle, step, back, align = 'left' }: AuthHeaderProps) {
   return (
-    <div className={cn('mb-7', align === 'center' && 'text-center')}>
+    <div className={cn('mb-6 sm:mb-7', align === 'center' && 'text-center')}>
       {back && (
         <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-          <Link
-            to={back.to}
-            className="group mb-4 inline-flex h-10 items-center gap-2 rounded-full pr-3 text-[13px] text-gold-muted transition-colors hover:text-gold-bright"
-          >
-            <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" aria-hidden />
-            {back.label}
-          </Link>
+          {'to' in back ? (
+            <Link to={back.to} className={backClasses}>
+              <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" aria-hidden />
+              {back.label}
+            </Link>
+          ) : (
+            <button type="button" onClick={back.onClick} className={backClasses}>
+              <ArrowLeft size={16} className="transition-transform group-hover:-translate-x-0.5" aria-hidden />
+              {back.label}
+            </button>
+          )}
         </motion.div>
       )}
 
@@ -36,7 +41,7 @@ export function AuthHeader({ title, subtitle, step, back, align = 'left' }: Auth
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: luxuryEase }}
           aria-label="Onboarding progress"
-          className={cn('mb-5 flex items-center gap-2', align === 'center' && 'justify-center')}
+          className={cn('mb-4 flex items-center gap-2 sm:mb-5', align === 'center' && 'justify-center')}
         >
           {steps.map((label, i) => {
             const n = i + 1
@@ -75,7 +80,7 @@ export function AuthHeader({ title, subtitle, step, back, align = 'left' }: Auth
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: luxuryEase, delay: 0.18 }}
-          className="mt-3 text-[14.5px] leading-relaxed text-cream-muted text-pretty"
+          className="mt-2 text-[14px] leading-relaxed text-cream-muted text-pretty sm:mt-3 sm:text-[14.5px]"
         >
           {subtitle}
         </motion.p>

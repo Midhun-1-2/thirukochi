@@ -30,7 +30,7 @@ export function MPINInput({ length = 4, value, status = 'idle', label = 'MPIN', 
           <span
             key={i}
             className={cn(
-              'relative flex size-14 items-center justify-center rounded-[16px] border transition-[border-color,box-shadow,background-color] duration-300',
+              'relative flex size-[52px] items-center justify-center rounded-[16px] border transition-[border-color,box-shadow,background-color] duration-300 sm:size-14',
               'bg-[rgba(38,0,0,0.6)]',
               status === 'error'
                 ? 'border-rose/70'
