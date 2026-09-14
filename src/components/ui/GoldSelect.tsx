@@ -221,8 +221,8 @@ export function GoldSelect<T extends string | number>({
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.22, ease: luxuryEase }}
             className={cn(
-              'surface-glass gold-edge absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-[280px] overflow-auto rounded-[16px] p-1.5',
-              'origin-top shadow-luxury-lg',
+              'surface-solid gold-edge absolute left-0 right-0 top-[calc(100%+8px)] z-40 max-h-[280px] overflow-auto rounded-[16px] p-1.5',
+              'origin-top',
             )}
           >
             {options.map((opt, i) => {

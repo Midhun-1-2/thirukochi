@@ -16,7 +16,7 @@ export default function SchemeSuccessPage() {
     <PageTransition className="relative overflow-clip">
       <GoldGlow className="-top-40 left-1/2 -translate-x-1/2" size={640} intensity={0.22} />
       <GoldRibbon variant="sweep" opacity={0.3} className="top-auto bottom-0 h-[40%]" />
-      <PageContainer className="relative flex min-h-[calc(100dvh-var(--nav-height)-var(--bottom-nav-height)-48px)] items-center justify-center py-10 lg:min-h-[calc(100dvh-88px-96px)]">
+      <PageContainer className="relative flex min-h-[calc(100dvh-var(--nav-height)-var(--bottom-nav-height)-48px)] items-center justify-center py-6 sm:py-10 lg:min-h-[calc(100dvh-88px-96px)]">
         <SchemeSuccess joined={lastJoined} scheme={getScheme(lastJoined.schemeId)} />
       </PageContainer>
     </PageTransition>

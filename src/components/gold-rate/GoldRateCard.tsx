@@ -5,6 +5,7 @@ import type { GoldRateData } from '@/data'
 import type { GoldRateStatus } from '@/hooks/useGoldRate'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { cn } from '@/lib/cn'
+import { useEntrance } from '@/lib/entrance'
 import { formatChange, formatINR } from '@/lib/format'
 import { luxuryEase } from '@/lib/motion'
 import { GoldBadge } from '@/components/ui/GoldBadge'
@@ -23,20 +24,32 @@ import { GoldRateSelector } from './GoldRateSelector'
 interface GoldRateCardProps {
   status: GoldRateStatus
   data: GoldRateData | null
+  /** Data came from the session cache at mount — paint it without the reveal choreography. */
+  fromCache?: boolean
   onRetry?: () => void
   className?: string
 }
 
-export function GoldRateCard({ status, data, onRetry, className }: GoldRateCardProps) {
+export function GoldRateCard({ status, data, fromCache, onRetry, className }: GoldRateCardProps) {
   const [selectedId, setSelectedId] = useState<string>('')
+  const [interacted, setInteracted] = useState(false)
+  const entrance = useEntrance()
   const rates = data?.rates ?? []
   const selected = rates.find((r) => r.id === selectedId) ?? rates[0]
+  // Price count-up: on the first reveal, on fresh data, or when the member switches purity.
+  // (The chart draws itself in on every showing — it is CSS-only and cheap.)
+  const reveal = entrance || !fromCache || interacted
+
+  const onSelect = (id: string) => {
+    setInteracted(true)
+    setSelectedId(id)
+  }
 
   return (
     <GoldCard
       variant="edge"
       padding="none"
-      className={cn('overflow-clip', className)}
+      className={cn('edge-spark-track overflow-clip', className)}
       aria-busy={status === 'loading'}
       aria-live="polite"
     >
@@ -44,7 +57,7 @@ export function GoldRateCard({ status, data, onRetry, className }: GoldRateCardP
       <GoldGlow className="-right-24 -top-32" size={420} intensity={0.34} />
       <GoldGlow className="-bottom-40 -left-24" size={360} intensity={0.16} />
       <JewelleryPattern />
-      {status === 'ready' && <span aria-hidden className="orbit-spark left-0 top-0" />}
+      {status === 'ready' && <span aria-hidden className="edge-spark" />}
 
       <div className="relative p-5 sm:p-6 lg:p-7">
         {/* header row */}
@@ -92,7 +105,7 @@ export function GoldRateCard({ status, data, onRetry, className }: GoldRateCardP
                   </p>
                   <p className="mt-1.5 font-display text-[clamp(36px,5.2vw,54px)] font-medium leading-none tracking-[-0.02em] lining-nums">
                     <span className="gold-text">
-                      <AnimatedPrice value={selected.price} />
+                      <AnimatedPrice value={selected.price} reveal={reveal} />
                     </span>
                   </p>
                   <ChangeIndicator change={selected.change} />
@@ -120,7 +133,7 @@ export function GoldRateCard({ status, data, onRetry, className }: GoldRateCardP
         {status !== 'error' && (
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
             {status === 'ready' && rates.length > 0 ? (
-              <GoldRateSelector rates={rates} value={selected?.id ?? ''} onChange={setSelectedId} />
+              <GoldRateSelector rates={rates} value={selected?.id ?? ''} onChange={onSelect} />
             ) : (
               <Skeleton className="h-11 w-[236px] rounded-full" />
             )}
@@ -155,15 +168,16 @@ function ChangeIndicator({ change }: { change: number }) {
 }
 
 /** Tween the number up from a lower value on first reveal. */
-function AnimatedPrice({ value }: { value: number }) {
+function AnimatedPrice({ value, reveal }: { value: number; reveal: boolean }) {
   const reduced = useReducedMotion()
-  const mv = useMotionValue(reduced ? value : value * 0.965)
-  const [display, setDisplay] = useState(() => formatINR(reduced ? value : value * 0.965))
+  const countUp = reveal && !reduced
+  const mv = useMotionValue(countUp ? value * 0.965 : value)
+  const [display, setDisplay] = useState(() => formatINR(countUp ? value * 0.965 : value))
 
   useMotionValueEvent(mv, 'change', (v) => setDisplay(formatINR(v)))
 
   useEffect(() => {
-    if (reduced) {
+    if (reduced || mv.get() === value) {
       mv.set(value)
       return
     }

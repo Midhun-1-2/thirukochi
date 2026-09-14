@@ -4,6 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { PromoSlide } from '@/data'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { cn } from '@/lib/cn'
+import { useEntrance } from '@/lib/entrance'
 import { luxuryEase } from '@/lib/motion'
 import { GoldButton } from '@/components/ui/GoldButton'
 import { IconButton } from '@/components/ui/IconButton'
@@ -29,18 +30,27 @@ const variants = {
 export function PromoCarousel({ slides, interval = 5500, className }: PromoCarouselProps) {
   const [[index, direction], setIndex] = useState<[number, number]>([0, 0])
   const [paused, setPaused] = useState(false)
+  // Slide copy animates in on the page's first reveal and whenever the slide changes —
+  // never on a plain revisit, where the campaign should simply be there.
+  const [changed, setChanged] = useState(false)
+  const entrance = useEntrance()
+  const revealCopy = entrance || changed
   const reduced = useReducedMotion()
   const timer = useRef<number | null>(null)
   const count = slides.length
 
   const go = useCallback(
     (dir: number) => {
+      setChanged(true)
       setIndex(([i]) => [(i + dir + count) % count, dir])
     },
     [count],
   )
 
-  const goTo = (i: number) => setIndex(([cur]) => [i, i > cur ? 1 : -1])
+  const goTo = (i: number) => {
+    setChanged(true)
+    setIndex(([cur]) => [i, i > cur ? 1 : -1])
+  }
 
   useEffect(() => {
     if (paused || reduced || count < 2) return
@@ -88,6 +98,8 @@ export function PromoCarousel({ slides, interval = 5500, className }: PromoCarou
               aria-roledescription="slide"
               aria-label={`${index + 1} of ${count}: ${slide.title}`}
               className="absolute inset-0 cursor-grab active:cursor-grabbing"
+              // promote the slide so the transition moves a layer instead of re-rasterising the image every frame
+              style={{ willChange: 'transform, opacity' }}
             >
               <img
                 src={slide.image}
@@ -103,7 +115,7 @@ export function PromoCarousel({ slides, interval = 5500, className }: PromoCarou
 
               <div className="relative flex h-full flex-col justify-end p-5 sm:justify-center sm:p-8 lg:p-10 xl:p-12">
                 <motion.p
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={revealCopy ? { opacity: 0, y: 10 } : false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.25, duration: 0.5 }}
                   className="mb-2 text-[10.5px] uppercase tracking-[0.3em] text-gold-muted sm:text-[11px]"
@@ -111,7 +123,7 @@ export function PromoCarousel({ slides, interval = 5500, className }: PromoCarou
                   {slide.eyebrow}
                 </motion.p>
                 <motion.h3
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={revealCopy ? { opacity: 0, y: 16 } : false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.32, duration: 0.6, ease: luxuryEase }}
                   className="max-w-[18ch] font-display text-[clamp(24px,4.5vw,44px)] font-medium leading-[1.08] text-cream text-balance"
@@ -119,7 +131,7 @@ export function PromoCarousel({ slides, interval = 5500, className }: PromoCarou
                   {slide.title}
                 </motion.h3>
                 <motion.p
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={revealCopy ? { opacity: 0, y: 12 } : false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.42, duration: 0.55 }}
                   className="mt-2.5 hidden max-w-[42ch] text-[13.5px] leading-relaxed text-cream-muted xs:block sm:mt-3 sm:text-[14px]"
@@ -127,7 +139,7 @@ export function PromoCarousel({ slides, interval = 5500, className }: PromoCarou
                   {slide.subtitle}
                 </motion.p>
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={revealCopy ? { opacity: 0, y: 10 } : false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.52, duration: 0.5 }}
                   className="mt-4 sm:mt-6"

@@ -9,9 +9,67 @@
     <meta name="color-scheme" content="dark" />
     <meta name="description" content="Thirukochi Gold & Diamonds — your gold journey begins here." />
     <title>Thirukochi Gold & Diamonds</title>
+    <style>
+      /* First-paint splash: shown until the app bundle mounts, so a
+         reload never shows an empty screen. Replaced by React. */
+      html {
+        background: #160000;
+      }
+      .splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+        background-color: #160000;
+        background-image:
+          radial-gradient(90% 60% at 20% 0%, rgba(120, 18, 18, 0.55) 0%, transparent 60%),
+          radial-gradient(70% 50% at 100% 100%, rgba(145, 100, 15, 0.18) 0%, transparent 60%),
+          linear-gradient(180deg, #2a0000 0%, #160000 55%, #0d0000 100%);
+      }
+      .splash img {
+        width: 176px;
+        height: auto;
+        filter: drop-shadow(0 12px 40px rgba(249, 223, 50, 0.22));
+      }
+      .splash i {
+        display: block;
+        width: 120px;
+        height: 2px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(249, 223, 50, 0.12);
+        position: relative;
+      }
+      .splash i::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(90deg, transparent, #f9df32 50%, transparent);
+        animation: splash-shimmer 1.4s ease-in-out infinite;
+      }
+      @keyframes splash-shimmer {
+        to {
+          transform: translateX(100%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .splash i::after {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="splash" role="status" aria-label="Loading Thirukochi Gold &amp; Diamonds">
+        <img src="/assets/logo/thirukochi-logo-400.png" alt="Thirukochi Gold &amp; Diamonds" width="176" height="87" />
+        <i aria-hidden="true"></i>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

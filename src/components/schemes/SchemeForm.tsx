@@ -7,6 +7,7 @@ import { ArrowRight, CalendarDays, CreditCard, Gem, IndianRupee } from 'lucide-r
 import { getScheme, mockPaymentMethods, mockSchemes } from '@/data'
 import type { SchemeSelection } from '@/data'
 import { cn } from '@/lib/cn'
+import { useEntrance } from '@/lib/entrance'
 import { formatINR } from '@/lib/format'
 import { digitsOnly } from '@/lib/inputs'
 import { luxuryEase, staggerContainer, staggerItem } from '@/lib/motion'
@@ -98,6 +99,7 @@ export function SchemeForm({ defaultValues, onSubmit, onValuesChange, className 
     () => (scheme?.tenures ?? [6, 12, 18, 24]).map((t) => ({ value: t, label: `${t} Months` })),
     [scheme],
   )
+  const entrance = useEntrance()
   const paymentOptions = useMemo(() => mockPaymentMethods.map((p) => ({ value: p.id, label: p.label, description: p.description })), [])
 
   const completed = [
@@ -112,9 +114,9 @@ export function SchemeForm({ defaultValues, onSubmit, onValuesChange, className 
       noValidate
       onSubmit={handleSubmit((v) => onSubmit(v))}
       variants={staggerContainer(0.08, 0.2)}
-      initial="hidden"
+      initial={entrance ? 'hidden' : false}
       animate="show"
-      className={cn('flex flex-col gap-4', className)}
+      className={cn('flex flex-col gap-3 sm:gap-4', className)}
     >
       <motion.div variants={staggerItem}>
         <SchemeProgress completed={completed} total={4} />

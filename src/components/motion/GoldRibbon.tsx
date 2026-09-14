@@ -1,6 +1,7 @@
 import { useId } from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/cn'
+import { useEntrance } from '@/lib/entrance'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 /* ------------------------------------------------------------------
@@ -50,6 +51,8 @@ const shapes = {
 export function GoldRibbon({ className, flip, opacity = 0.75, variant = 'sweep', draw = true, fade = 'none' }: GoldRibbonProps) {
   const id = useId().replace(/:/g, '')
   const reduced = useReducedMotion()
+  const entrance = useEntrance()
+  const drawIn = draw && !reduced && entrance
   const s = shapes[variant]
 
   return (
@@ -64,12 +67,11 @@ export function GoldRibbon({ className, flip, opacity = 0.75, variant = 'sweep',
         maskImage: fadeMasks[fade],
       }}
     >
-      <motion.svg
+      {/* drift is a compositor-only CSS animation: the blurred band is rasterised once */}
+      <svg
         viewBox="0 0 1240 480"
         preserveAspectRatio="xMidYMid slice"
-        className="absolute inset-0 h-full w-full"
-        animate={reduced ? undefined : { x: [0, -24, 10, 0], y: [0, 10, -6, 0] }}
-        transition={{ duration: 28, repeat: Infinity, ease: 'easeInOut' }}
+        className="animate-ribbon-drift absolute inset-0 h-full w-full will-change-transform"
       >
         <defs>
           <linearGradient id={`${id}-band`} x1="0" y1="0" x2="1" y2="0">
@@ -84,12 +86,6 @@ export function GoldRibbon({ className, flip, opacity = 0.75, variant = 'sweep',
             <stop offset="0" stopColor="#F9DF32" stopOpacity="0" />
             <stop offset="0.5" stopColor="#FFF6C8" stopOpacity="1" />
             <stop offset="1" stopColor="#F9DF32" stopOpacity="0" />
-            {!reduced && (
-              <>
-                <animate attributeName="x1" values="-0.6;0.6;-0.6" dur="9s" repeatCount="indefinite" />
-                <animate attributeName="x2" values="0.4;1.6;0.4" dur="9s" repeatCount="indefinite" />
-              </>
-            )}
           </linearGradient>
           <filter id={`${id}-blur`} x="-10%" y="-40%" width="120%" height="180%">
             <feGaussianBlur stdDeviation="14" />
@@ -106,7 +102,7 @@ export function GoldRibbon({ className, flip, opacity = 0.75, variant = 'sweep',
         <motion.path
           d={s.band}
           fill={`url(#${id}-band)`}
-          initial={draw && !reduced ? { opacity: 0 } : undefined}
+          initial={drawIn ? { opacity: 0 } : false}
           animate={{ opacity: 0.9 }}
           transition={{ duration: 1.6, ease: 'easeOut', delay: 0.2 }}
         />
@@ -119,7 +115,7 @@ export function GoldRibbon({ className, flip, opacity = 0.75, variant = 'sweep',
           strokeWidth="1.6"
           strokeLinecap="round"
           filter={`url(#${id}-soft)`}
-          initial={draw && !reduced ? { pathLength: 0, opacity: 0 } : undefined}
+          initial={drawIn ? { pathLength: 0, opacity: 0 } : false}
           animate={{ pathLength: 1, opacity: 1 }}
           transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
         />
@@ -132,11 +128,11 @@ export function GoldRibbon({ className, flip, opacity = 0.75, variant = 'sweep',
           strokeWidth="0.8"
           strokeLinecap="round"
           opacity="0.55"
-          initial={draw && !reduced ? { pathLength: 0 } : undefined}
+          initial={drawIn ? { pathLength: 0 } : false}
           animate={{ pathLength: 1 }}
           transition={{ duration: 2.6, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
         />
-      </motion.svg>
+      </svg>
     </div>
   )
 }

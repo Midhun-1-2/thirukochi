@@ -8,16 +8,15 @@ export const springSnappy: Transition = { type: 'spring', stiffness: 420, dampin
 export const springGentle: Transition = { type: 'spring', stiffness: 160, damping: 22 }
 
 export const durations = {
-  fast: 0.22,
-  base: 0.45,
-  slow: 0.7,
+  fast: 0.18,
+  base: 0.38,
+  slow: 0.6,
 } as const
 
-/** Shared route transition. */
+/** Page entrance (first showing only); exits are owned by the layout cross-fade. */
 export const pageVariants: Variants = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0, transition: { duration: durations.base, ease: luxuryEase } },
-  exit: { opacity: 0, y: -10, transition: { duration: durations.fast, ease: 'easeIn' } },
 }
 
 export const fadeUp = (delay = 0, distance = 18): Variants => ({
@@ -41,8 +40,8 @@ export const staggerContainer = (staggerChildren = 0.08, delayChildren = 0): Var
 })
 
 export const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: luxuryEase } },
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: luxuryEase } },
 }
 
 export const shakeVariants: Variants = {

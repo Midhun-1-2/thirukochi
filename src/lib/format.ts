@@ -23,6 +23,13 @@ export function formatChange(value: number): { text: string; direction: 'up' | '
   return { text: formatINR(Math.abs(value)), direction }
 }
 
+const dayMonthYear = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+
+/** 5 Sept 2026 */
+export function formatDate(iso: string): string {
+  return dayMonthYear.format(new Date(iso))
+}
+
 /** Mask a phone number: +91 98765 43210 */
 export function formatPhone(phone: string): string {
   const digits = phone.replace(/\D/g, '').slice(-10)

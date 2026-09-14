@@ -28,8 +28,8 @@ export function Header() {
   return (
     <header
       className={cn(
-        'sticky top-0 z-30 border-b border-[rgba(249,223,50,0.08)]',
-        'bg-[rgba(22,0,0,0.94)]',
+        'sticky top-0 z-30 border-b border-[rgba(249,223,50,0.1)]',
+        'bg-[linear-gradient(90deg,#2a0202_0%,#1c0000_55%,#180000_100%)]',
         'pt-[var(--safe-top)]',
       )}
     >
@@ -152,7 +152,7 @@ function NotificationsMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.22, ease: luxuryEase }}
-            className="surface-glass gold-edge absolute right-0 top-[calc(100%+10px)] z-50 w-[min(340px,calc(100vw-32px))] origin-top-right rounded-[18px] p-2 shadow-luxury-lg"
+            className="surface-solid gold-edge absolute right-0 top-[calc(100%+10px)] z-50 w-[min(340px,calc(100vw-32px))] origin-top-right rounded-[18px] p-2"
           >
             <div className="flex items-center justify-between px-3 pb-2 pt-2">
               <p className="font-display text-[16px] font-medium text-cream">Notifications</p>

@@ -1,7 +1,8 @@
-import { cloneElement } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { Suspense } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useLocation, useOutlet } from 'react-router-dom'
 import { JoinSchemeCTA } from '@/components/dashboard/JoinSchemeCTA'
+import { RouteFallback } from '@/components/motion/RouteFallback'
 import { useKeyboardOpen } from '@/hooks/useKeyboardOpen'
 import { cn } from '@/lib/cn'
 import { DesktopSidebar } from './DesktopSidebar'
@@ -35,7 +36,21 @@ export function AppShell() {
             'pb-[calc(var(--bottom-nav-height)+var(--safe-bottom)+24px)] lg:pb-12',
           )}
         >
-          <AnimatePresence mode="wait">{outlet && cloneElement(outlet, { key: location.pathname })}</AnimatePresence>
+          {/* Crossfade: the incoming page mounts immediately while the
+              outgoing one is popped out of flow and fades — a page is
+              always on screen, even on slow devices. The incoming page
+              is positioned so it paints above the (absolute) outgoing one. */}
+          <AnimatePresence mode="popLayout" initial={false}>
+            <motion.div
+              key={location.pathname}
+              className="relative z-[1] w-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.2, ease: 'easeOut' } }}
+              exit={{ opacity: 0, transition: { duration: 0.2, ease: 'easeIn' } }}
+            >
+              <Suspense fallback={<RouteFallback />}>{outlet}</Suspense>
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 

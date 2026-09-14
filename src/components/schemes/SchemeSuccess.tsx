@@ -43,7 +43,7 @@ export function SchemeSuccess({ scheme, joined }: SchemeSuccessProps) {
       <GoldParticles count={20} seed={17} opacity={0.6} className="-inset-x-10 -top-10 h-[360px]" />
 
       {/* ---- emblem ---- */}
-      <div className="relative mb-8 flex size-[168px] items-center justify-center sm:size-[188px]">
+      <div className="relative mb-5 flex size-[148px] items-center justify-center sm:mb-8 sm:size-[188px]">
         <Burst delay={d(T.burst)} />
 
         {/* halo */}
@@ -83,7 +83,7 @@ export function SchemeSuccess({ scheme, joined }: SchemeSuccessProps) {
         {/* check */}
         <motion.svg
           viewBox="0 0 64 64"
-          className="relative size-[76px] text-maroon-dark sm:size-[84px]"
+          className="relative size-[68px] text-maroon-dark sm:size-[84px]"
           fill="none"
           stroke="currentColor"
           strokeWidth="5"
@@ -117,7 +117,7 @@ export function SchemeSuccess({ scheme, joined }: SchemeSuccessProps) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: luxuryEase, delay: d(T.sub) }}
-        className="mt-3 max-w-[38ch] text-[14.5px] leading-relaxed text-cream-muted"
+        className="mt-2 max-w-[38ch] text-[14px] leading-relaxed text-cream-muted sm:mt-3 sm:text-[14.5px]"
       >
         Your scheme has been activated. Reference <span className="text-gold-pale lining-nums">{joined.referenceNo}</span>
       </motion.p>
@@ -127,7 +127,7 @@ export function SchemeSuccess({ scheme, joined }: SchemeSuccessProps) {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: luxuryEase, delay: d(T.card) }}
-        className="mt-8 w-full"
+        className="mt-5 w-full sm:mt-8"
       >
         <GoldCard variant="edge" padding="sm" className="text-left">
           <div className="flex items-center gap-3">
@@ -151,7 +151,7 @@ export function SchemeSuccess({ scheme, joined }: SchemeSuccessProps) {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: luxuryEase, delay: d(T.cta) }}
-        className="mt-6 flex w-full flex-col gap-3 sm:flex-row"
+        className="mt-4 flex w-full flex-col gap-2.5 sm:mt-6 sm:flex-row sm:gap-3"
       >
         <GoldButton to={routes.home} size="lg" fullWidth iconRight={<ArrowRight />}>
           Go to Home

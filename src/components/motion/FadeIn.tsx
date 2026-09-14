@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import { useEntrance } from '@/lib/entrance'
 import { fadeUp, scaleIn, fadeIn as fadeOnly } from '@/lib/motion'
 
 interface FadeInProps {
@@ -13,7 +14,13 @@ interface FadeInProps {
   as?: 'div' | 'section' | 'span' | 'p' | 'li'
 }
 
+/** Mount-time reveal; a plain element when the page is not playing its entrance. */
 export function FadeIn({ children, delay = 0, distance = 18, mode = 'up', className, inView, as = 'div' }: FadeInProps) {
+  const entrance = useEntrance()
+  if (!entrance) {
+    const Tag = as
+    return <Tag className={className}>{children}</Tag>
+  }
   const variants = mode === 'scale' ? scaleIn(delay) : mode === 'fade' ? fadeOnly(delay) : fadeUp(delay, distance)
   const Tag = motion[as]
   return (

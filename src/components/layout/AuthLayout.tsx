@@ -1,4 +1,4 @@
-import { cloneElement } from 'react'
+import { Suspense } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useLocation, useOutlet } from 'react-router-dom'
 import { Logo } from '@/components/brand/Logo'
@@ -96,12 +96,35 @@ export function AuthLayout() {
               <Logo size="md" glow priority />
             </motion.div>
 
-            <div className="mx-auto w-full max-w-[440px] lg:mx-0 lg:max-w-[460px]">
-              <AnimatePresence mode="wait">{outlet && cloneElement(outlet, { key: location.pathname })}</AnimatePresence>
+            <div className="relative mx-auto w-full max-w-[440px] lg:mx-0 lg:max-w-[460px]">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={location.pathname}
+                  className="relative z-[1] w-full"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { duration: 0.2, ease: 'easeOut' } }}
+                  exit={{ opacity: 0, transition: { duration: 0.2, ease: 'easeIn' } }}
+                >
+                  <Suspense fallback={<AuthFallback />}>{outlet}</Suspense>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </main>
       </div>
+    </div>
+  )
+}
+
+/** Form-column skeleton while an auth route chunk loads. */
+function AuthFallback() {
+  return (
+    <div role="status" aria-label="Loading" className="flex flex-col gap-4">
+      <span className="skeleton-gold h-9 w-3/4 rounded-lg" />
+      <span className="skeleton-gold h-4 w-1/2 rounded" />
+      <span className="skeleton-gold mt-4 h-[58px] w-full rounded-[14px]" />
+      <span className="skeleton-gold h-[58px] w-full rounded-[14px]" />
+      <span className="skeleton-gold mt-2 h-[54px] w-full rounded-[16px]" />
     </div>
   )
 }

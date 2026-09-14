@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ArrowRight, Plus, ShieldCheck, Sparkles } from 'lucide-react'
 import { routes } from '@/app/navigation'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { cn } from '@/lib/cn'
-import { luxuryEase, springSnappy, springSoft } from '@/lib/motion'
+import { luxuryEase, springSoft } from '@/lib/motion'
 import { GoldButton } from '@/components/ui/GoldButton'
 import { GoldGlow } from '@/components/motion/GoldGlow'
 import { GoldParticles } from '@/components/motion/GoldParticles'
@@ -11,7 +13,8 @@ import { GoldParticles } from '@/components/motion/GoldParticles'
 /* ------------------------------------------------------------------
    JoinSchemeCTA
    card     — rich gold-edged panel for the dashboard grid (md+)
-   floating — mobile bottom-right action, hides when keyboard opens
+   floating — mobile bottom-right "+" that stretches into the full
+              action on tap, hides when keyboard opens
 ------------------------------------------------------------------- */
 
 interface JoinSchemeCTAProps {
@@ -63,6 +66,14 @@ export function JoinSchemeCTA({ variant = 'card', visible = true, className }: J
   )
 }
 
+/**
+ * Floating action for phones: a plain gold "+" at rest. A tap stretches
+ * it into the full "Join Scheme" pill (the label slides in as it grows)
+ * and, once fully open, takes the member to the Join Scheme page.
+ */
+const FAB_CLOSED = 56
+const FAB_OPEN = 176
+
 function FloatingCTA({ visible }: { visible: boolean }) {
   return (
     <AnimatePresence>
@@ -71,32 +82,71 @@ function FloatingCTA({ visible }: { visible: boolean }) {
           initial={{ opacity: 0, y: 24, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 24, scale: 0.9, transition: { duration: 0.2 } }}
-          transition={{ duration: 0.5, ease: luxuryEase, delay: 0.3 }}
+          transition={{ duration: 0.35, ease: luxuryEase, delay: 0.1 }}
           className="fixed right-4 z-40 lg:hidden"
           style={{ bottom: 'calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px)' }}
         >
-          <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }} transition={springSnappy}>
-            <Link
-              to={routes.joinScheme}
-              aria-label="Join Scheme"
-              className={cn(
-                'group relative flex h-14 items-center gap-2.5 overflow-clip rounded-full pl-4 pr-5',
-                'gold-bg-button text-maroon-dark text-[14px] font-semibold',
-                'shadow-[0_14px_36px_rgba(249,223,50,0.32),0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.5)]',
-              )}
-            >
-              <span aria-hidden className="absolute inset-0 -translate-x-[120%] skew-x-[-18deg] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] transition-transform duration-[900ms] group-hover:translate-x-[120%]" />
-              <span className="relative flex size-8 items-center justify-center rounded-full bg-[rgba(38,0,0,0.16)]">
-                <Plus size={18} strokeWidth={2.6} aria-hidden />
-              </span>
-              <span className="relative">Join Scheme</span>
-            </Link>
-          </motion.div>
+          <FabButton />
           {/* soft halo */}
           <span aria-hidden className="pointer-events-none absolute inset-0 -z-10 rounded-full bg-[radial-gradient(circle,rgba(249,223,50,0.35),transparent_70%)] blur-xl" />
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+/** Lives inside the presence wrapper so its open state resets whenever the action hides. */
+function FabButton() {
+  const navigate = useNavigate()
+  const reduced = useReducedMotion()
+  const [open, setOpen] = useState(false)
+
+  const go = () => navigate(routes.joinScheme)
+  const onTap = () => {
+    if (open) return
+    if (reduced) {
+      go()
+      return
+    }
+    setOpen(true)
+  }
+
+  return (
+    <motion.button
+      type="button"
+      aria-label="Join Scheme"
+      aria-expanded={open}
+      onClick={onTap}
+      initial={false}
+      animate={{ width: open ? FAB_OPEN : FAB_CLOSED }}
+      transition={{ duration: 0.38, ease: luxuryEase }}
+      onAnimationComplete={() => {
+        if (open) go()
+      }}
+      className={cn(
+        'group relative flex h-14 items-center overflow-clip rounded-full pl-3',
+        'gold-bg-button text-maroon-dark text-[14px] font-semibold',
+        'shadow-[0_14px_36px_rgba(249,223,50,0.32),0_4px_12px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.5)]',
+      )}
+    >
+      <span aria-hidden className="absolute inset-0 -translate-x-[120%] skew-x-[-18deg] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent)] transition-transform duration-[900ms] group-hover:translate-x-[120%]" />
+      <motion.span
+        animate={{ rotate: open ? 90 : 0 }}
+        transition={{ duration: 0.38, ease: luxuryEase }}
+        className="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-[rgba(38,0,0,0.16)]"
+      >
+        <Plus size={18} strokeWidth={2.6} aria-hidden />
+      </motion.span>
+      <motion.span
+        aria-hidden={!open}
+        initial={false}
+        animate={{ opacity: open ? 1 : 0, x: open ? 0 : -8 }}
+        transition={{ duration: 0.3, ease: luxuryEase, delay: open ? 0.08 : 0 }}
+        className="relative ml-2.5 whitespace-nowrap pr-5"
+      >
+        Join Scheme
+      </motion.span>
+    </motion.button>
   )
 }
 

@@ -1,18 +1,18 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
-/** Reset scroll on route change (respects in-page hash links). */
+/**
+ * Handles in-page hash links (e.g. /profile#support).
+ * Top-of-page resets are done by <PageTransition> when a page mounts.
+ */
 export function ScrollToTop() {
   const { pathname, hash } = useLocation()
   useEffect(() => {
-    if (hash) {
-      const el = document.getElementById(hash.slice(1))
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        return
-      }
-    }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior })
+    if (!hash) return
+    const el = document.getElementById(hash.slice(1))
+    if (!el) return
+    const t = window.setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 350)
+    return () => window.clearTimeout(t)
   }, [pathname, hash])
   return null
 }

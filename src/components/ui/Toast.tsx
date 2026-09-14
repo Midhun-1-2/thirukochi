@@ -119,7 +119,7 @@ function ToastCard({ item, onDismiss }: { item: ToastItem; onDismiss: () => void
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
       className={cn(
-        'pointer-events-auto surface-glass gold-edge relative w-full max-w-[380px] overflow-clip rounded-[var(--radius-md)]',
+        'pointer-events-auto surface-solid gold-edge relative w-full max-w-[380px] overflow-clip rounded-[var(--radius-md)]',
         'flex items-start gap-3 px-4 py-3.5',
       )}
     >

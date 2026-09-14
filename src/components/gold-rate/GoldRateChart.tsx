@@ -1,12 +1,12 @@
 import { useId, useMemo } from 'react'
-import { motion } from 'framer-motion'
 import { cn } from '@/lib/cn'
-import { luxuryEase } from '@/lib/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 /* ------------------------------------------------------------------
    GoldRateChart — a restrained gold sparkline (not a trading chart).
    Smooth curve, gradient stroke, soft area fill, glowing end point.
+   Draws itself in on every showing with CSS keyframes (compositor
+   friendly; nothing runs on the main thread per frame).
 ------------------------------------------------------------------- */
 
 interface GoldRateChartProps {
@@ -14,6 +14,8 @@ interface GoldRateChartProps {
   className?: string
   /** Re-run the draw animation when this changes (e.g. rate id). */
   animateKey?: string
+  /** Play the draw-in on mount. */
+  draw?: boolean
 }
 
 const W = 240
@@ -49,62 +51,53 @@ function buildPath(points: number[]) {
   return { line: d, area, last }
 }
 
-export function GoldRateChart({ points, className, animateKey }: GoldRateChartProps) {
+export function GoldRateChart({ points, className, animateKey, draw = true }: GoldRateChartProps) {
   const id = useId().replace(/:/g, '')
   const reduced = useReducedMotion()
+  const still = reduced || !draw
   const { line, area, last } = useMemo(() => buildPath(points), [points])
 
   return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="xMidYMid meet"
-      className={cn('h-full w-full overflow-visible', className)}
-      aria-hidden
-    >
-      <defs>
-        <linearGradient id={`${id}-stroke`} x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#91640F" />
-          <stop offset="0.55" stopColor="#F9DF32" />
-          <stop offset="1" stopColor="#FFF3B0" />
-        </linearGradient>
-        <linearGradient id={`${id}-area`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#F9DF32" stopOpacity="0.28" />
-          <stop offset="1" stopColor="#F9DF32" stopOpacity="0" />
-        </linearGradient>
-      </defs>
+    <div className={cn('relative h-full w-full', className)} aria-hidden>
+      {/* The draw-in is pure CSS (see chart-* utilities): no per-frame script, and the
+          SVG sits on its own layer so the repaints stay confined to the sparkline. */}
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" className="h-full w-full overflow-visible will-change-transform">
+        <defs>
+          <linearGradient id={`${id}-stroke`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="#91640F" />
+            <stop offset="0.55" stopColor="#F9DF32" />
+            <stop offset="1" stopColor="#FFF3B0" />
+          </linearGradient>
+          <linearGradient id={`${id}-area`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#F9DF32" stopOpacity="0.28" />
+            <stop offset="1" stopColor="#F9DF32" stopOpacity="0" />
+          </linearGradient>
+        </defs>
 
-      <motion.path
-        key={`area-${animateKey}`}
-        d={area}
-        fill={`url(#${id}-area)`}
-        initial={reduced ? undefined : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.9, delay: 0.5 }}
-      />
-      <motion.path
-        key={`line-${animateKey}`}
-        d={line}
-        fill="none"
-        stroke={`url(#${id}-stroke)`}
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-        initial={reduced ? undefined : { pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.4, ease: luxuryEase }}
-      />
-      <motion.g
-        key={`dot-${animateKey}`}
-        initial={reduced ? undefined : { opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 1.2, duration: 0.4, ease: luxuryEase }}
-        style={{ transformOrigin: `${last.x}px ${last.y}px` }}
+        <path key={`area-${animateKey}`} d={area} fill={`url(#${id}-area)`} className={still ? undefined : 'chart-area-in'} />
+        <path
+          key={`line-${animateKey}`}
+          d={line}
+          pathLength={1}
+          fill="none"
+          stroke={`url(#${id}-stroke)`}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          className={still ? undefined : 'chart-line-in'}
+        />
+        <g key={`dot-${animateKey}`} className={still ? undefined : 'chart-dot-in'}>
+          <circle cx={last.x} cy={last.y} r="2.6" fill="#FFF6C2" stroke="#F9DF32" strokeWidth="1" />
+        </g>
+      </svg>
+      {/* pulsing halo on the latest point — an HTML layer so the SVG is never repainted by it */}
+      <span
+        key={`halo-${animateKey}`}
+        className={cn('pointer-events-none absolute size-[14px] -translate-x-1/2 -translate-y-1/2', !still && 'chart-dot-in')}
+        style={{ left: `${(last.x / W) * 100}%`, top: `${(last.y / H) * 100}%` }}
       >
-        <circle cx={last.x} cy={last.y} r="7" fill="#F9DF32" opacity="0.18">
-          {!reduced && <animate attributeName="r" values="5;10;5" dur="2.4s" repeatCount="indefinite" />}
-        </circle>
-        <circle cx={last.x} cy={last.y} r="2.6" fill="#FFF6C2" stroke="#F9DF32" strokeWidth="1" />
-      </motion.g>
-    </svg>
+        <span className="animate-chart-pulse block size-full rounded-full bg-gold-bright will-change-transform" />
+      </span>
+    </div>
   )
 }

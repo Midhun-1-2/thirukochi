@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { useEntrance } from '@/lib/entrance'
 
 interface BackLinkProps {
   to?: string
@@ -12,6 +13,7 @@ interface BackLinkProps {
 /** Back navigation — uses history when possible, falls back to `to`. */
 export function BackLink({ to, label = 'Back', className }: BackLinkProps) {
   const navigate = useNavigate()
+  const entrance = useEntrance()
   const classes = cn(
     'group inline-flex h-10 items-center gap-2 rounded-full pr-3 text-[13px] text-gold-muted transition-colors hover:text-gold-bright',
     className,
@@ -26,7 +28,7 @@ export function BackLink({ to, label = 'Back', className }: BackLinkProps) {
   )
 
   return (
-    <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }} className="inline-block">
+    <motion.div initial={entrance ? { opacity: 0, x: -6 } : false} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }} className="inline-block">
       {to ? (
         <Link to={to} className={classes}>
           {inner}

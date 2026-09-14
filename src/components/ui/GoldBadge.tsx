@@ -38,7 +38,7 @@ export function GoldBadge({ tone = 'gold', children, className, icon }: GoldBadg
 export function LiveDot({ className }: { className?: string }) {
   return (
     <span className={cn('relative inline-flex size-2', className)} aria-hidden>
-      <span className="absolute inset-0 rounded-full bg-gold-bright animate-live-pulse" />
+      <span className="absolute inset-0 rounded-full bg-gold-bright animate-live-pulse will-change-transform" />
       <span className="relative size-2 rounded-full bg-gold-bright shadow-[0_0_8px_rgba(249,223,50,0.9)]" />
     </span>
   )

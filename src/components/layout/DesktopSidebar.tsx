@@ -1,19 +1,26 @@
-import { motion } from 'framer-motion'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { Headset, Plus } from 'lucide-react'
 import { navItems, routes } from '@/app/navigation'
 import { Logo } from '@/components/brand/Logo'
 import { BrandMark } from '@/components/brand/BrandMark'
+import { useOptimisticNav } from '@/hooks/useOptimisticNav'
 import { cn } from '@/lib/cn'
-import { springSoft } from '@/lib/motion'
 
 /* ------------------------------------------------------------------
    DesktopSidebar — compact premium rail.
    lg  (1024px+): 88px icon rail with tooltips
    xl  (1280px+): 264px expanded navigation
+   The active indicator slides with a CSS transform transition
+   (compositor-only) the instant an item is clicked.
 ------------------------------------------------------------------- */
 
+/** Row height (h-12) + list gap (gap-1.5). */
+const ROW_STRIDE = 54
+
 export function DesktopSidebar() {
+  const { isActive, onNavigate } = useOptimisticNav()
+  const activeIndex = navItems.findIndex((i) => isActive(i.to))
+
   return (
     <aside
       className={cn(
@@ -37,59 +44,57 @@ export function DesktopSidebar() {
       </div>
 
       <nav aria-label="Primary" className="mt-2 flex-1 px-3 xl:px-4">
-        <ul className="flex flex-col gap-1.5">
-          {navItems.map(({ to, label, icon: Icon }) => (
-            <li key={to}>
-              <NavLink
-                to={to}
-                end={to === '/'}
-                className={({ isActive }) =>
-                  cn(
+        <ul className="relative flex flex-col gap-1.5">
+          {/* sliding active indicator */}
+          <span
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute inset-x-0 top-0 h-12 rounded-[14px] bg-[rgba(249,223,50,0.08)] shadow-[inset_0_0_0_1px_rgba(249,223,50,0.18)]',
+              'transition-[transform,opacity] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform',
+              activeIndex < 0 && 'opacity-0',
+            )}
+            style={{ transform: `translateY(${Math.max(0, activeIndex) * ROW_STRIDE}px)` }}
+          >
+            <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full gold-bg shadow-[0_0_10px_rgba(249,223,50,0.7)] xl:-left-4" />
+          </span>
+
+          {navItems.map(({ to, label, icon: Icon }) => {
+            const active = isActive(to)
+            return (
+              <li key={to}>
+                <Link
+                  to={to}
+                  aria-current={active ? 'page' : undefined}
+                  onClick={() => onNavigate(to)}
+                  className={cn(
                     'group relative flex h-12 items-center gap-3.5 rounded-[14px] px-0 xl:px-4',
                     'justify-center xl:justify-start',
-                    'text-[14px] font-medium transition-colors duration-200',
-                    isActive ? 'text-gold-bright' : 'text-cream-muted hover:text-cream',
-                  )
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <motion.span
-                        layoutId="sidebar-active"
-                        transition={springSoft}
-                        className="absolute inset-0 rounded-[14px] bg-[rgba(249,223,50,0.08)] shadow-[inset_0_0_0_1px_rgba(249,223,50,0.18)]"
-                      />
+                    // no colour transition: it would repaint every frame while the new page renders
+                    'text-[14px] font-medium',
+                    active ? 'text-gold-bright' : 'text-cream-muted hover:text-cream',
+                  )}
+                >
+                  <Icon
+                    size={20}
+                    strokeWidth={1.6}
+                    className={cn('relative transition-transform duration-300 group-hover:scale-110', active && 'drop-shadow-[0_0_6px_rgba(249,223,50,0.5)]')}
+                    aria-hidden
+                  />
+                  <span className="relative hidden xl:inline">{label}</span>
+                  {/* tooltip for the rail */}
+                  <span
+                    role="tooltip"
+                    className={cn(
+                      'pointer-events-none absolute left-[calc(100%+10px)] whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[12px] text-cream',
+                      'surface-solid opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 xl:hidden',
                     )}
-                    {isActive && (
-                      <motion.span
-                        layoutId="sidebar-active-bar"
-                        transition={springSoft}
-                        className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full gold-bg shadow-[0_0_10px_rgba(249,223,50,0.7)] xl:-left-4"
-                      />
-                    )}
-                    <Icon
-                      size={20}
-                      strokeWidth={1.6}
-                      className={cn('relative transition-transform duration-300 group-hover:scale-110', isActive && 'drop-shadow-[0_0_6px_rgba(249,223,50,0.5)]')}
-                      aria-hidden
-                    />
-                    <span className="relative hidden xl:inline">{label}</span>
-                    {/* tooltip for the rail */}
-                    <span
-                      role="tooltip"
-                      className={cn(
-                        'pointer-events-none absolute left-[calc(100%+10px)] whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[12px] text-cream',
-                        'surface-glass opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 xl:hidden',
-                      )}
-                    >
-                      {label}
-                    </span>
-                  </>
-                )}
-              </NavLink>
-            </li>
-          ))}
+                  >
+                    {label}
+                  </span>
+                </Link>
+              </li>
+            )
+          })}
         </ul>
       </nav>
 

@@ -54,7 +54,11 @@
   --animate-float: float 7s ease-in-out infinite;
   --animate-spin-slow: spin 40s linear infinite;
   --animate-orbit: orbit 14s linear infinite;
-  --animate-gold-shine: gold-shine 6s ease-in-out infinite;
+  --animate-gold-shine: gold-shine 9s ease-in-out infinite;
+  --animate-glow-drift: glow-drift 22s ease-in-out infinite;
+  --animate-chart-pulse: chart-pulse 2.4s ease-in-out infinite;
+  --animate-edge-spark: edge-spark 9s linear infinite;
+  --animate-ribbon-drift: ribbon-drift 28s ease-in-out infinite;
 }
 
 :root {
@@ -228,7 +232,7 @@
   background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  animation: gold-shine 7s ease-in-out infinite;
+  animation: gold-shine 9s ease-in-out infinite;
 }
 
 @utility gold-bg {
@@ -282,6 +286,19 @@
   box-shadow:
     inset 0 1px 0 rgba(249, 223, 50, 0.1),
     var(--shadow-luxury);
+}
+
+/* Opaque floating surface — menus, listboxes, toasts, tooltips.
+   Solid so content underneath never bleeds through. */
+@utility surface-solid {
+  background:
+    linear-gradient(165deg, rgba(120, 14, 14, 0.55) 0%, rgba(84, 0, 0, 0.15) 45%, rgba(38, 0, 0, 0) 100%),
+    #2c0000;
+  border: 1px solid rgba(249, 223, 50, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(249, 223, 50, 0.16),
+    0 2px 0 rgba(0, 0, 0, 0.25),
+    0 24px 64px rgba(0, 0, 0, 0.6);
 }
 
 @utility surface-deep {
@@ -353,19 +370,80 @@
     linear-gradient(180deg, #2a0000 0%, #160000 55%, #0d0000 100%);
 }
 
-/* Gold particle running along a card edge (decorative) */
-@utility orbit-spark {
+/* Entrance reveal that costs nothing on the main thread: a CSS
+   transform/opacity keyframe (compositor-driven), staggered with
+   --reveal-delay. Used for the dashboard so it "arrives" on every visit. */
+@utility reveal-up {
+  animation: reveal-up 0.55s var(--ease-luxury) both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+
+/* Sparkline draw-in (GoldRateChart). The line uses pathLength="1", so
+   a dash of 1 is the whole path; the offset animates 1 → 0. */
+@utility chart-line-in {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: chart-draw 1.4s var(--ease-luxury) 0.15s forwards;
+}
+
+@utility chart-area-in {
+  opacity: 0;
+  animation: chart-fade 0.9s ease-out 0.7s forwards;
+}
+
+@utility chart-dot-in {
+  opacity: 0;
+  transform: scale(0);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: chart-pop 0.45s var(--ease-luxury) 1.35s forwards;
+}
+
+/* Jewellery-dust particle (see GoldParticles). The wrapper is static
+   (position, peak opacity, drift direction); the dot runs one fixed
+   transform/opacity keyframe so it stays a compositor-only animation. */
+@utility gold-particle {
   position: absolute;
+  pointer-events: none;
+}
+
+@utility gold-particle-dot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  opacity: 0;
+  background: radial-gradient(circle, #f9df32 0%, rgba(179, 135, 28, 0.9) 40%, rgba(179, 135, 28, 0) 75%);
+  will-change: transform, opacity;
+  animation: particle-drift 14s ease-in-out infinite;
+  &[data-bright] {
+    background: radial-gradient(circle, #fff8d6 0%, #f9df32 45%, rgba(249, 223, 50, 0) 75%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* Gold spark sweeping along a card's top edge (decorative).
+   Put `edge-spark-track` on the card and it sizes the sweep. */
+@utility edge-spark-track {
+  container-type: inline-size;
+}
+
+@utility edge-spark {
+  position: absolute;
+  top: -4px;
+  left: 0;
   width: 10px;
   height: 10px;
   border-radius: 999px;
   background: radial-gradient(circle, #fff6c2 0%, #f9df32 35%, rgba(249, 223, 50, 0) 70%);
-  filter: drop-shadow(0 0 6px rgba(249, 223, 50, 0.9));
-  offset-path: inset(0 round var(--radius-lg));
-  offset-distance: 0%;
-  animation: orbit 14s linear infinite;
+  box-shadow: 0 0 8px rgba(249, 223, 50, 0.9);
+  animation: edge-spark 9s linear infinite;
+  will-change: transform, opacity;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0;
 }
 
 /* ------------------------------------------------------------------
@@ -380,23 +458,119 @@
   }
 }
 
+/* A glint sweeps across, then the text rests: background-position is a
+   main-thread paint property, so the sweep is kept to ~30% of each cycle. */
 @keyframes gold-shine {
   0%,
+  30%,
   100% {
     background-position: 0% 50%;
   }
-  50% {
+  15% {
     background-position: 100% 50%;
   }
 }
 
+/* transform/opacity only — runs on the compositor */
 @keyframes live-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  60%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@keyframes chart-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chart-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes chart-pop {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes chart-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(249, 223, 50, 0.55);
+    transform: scale(0.7);
+    opacity: 0.12;
   }
-  60% {
-    box-shadow: 0 0 0 7px rgba(249, 223, 50, 0);
+  50% {
+    transform: scale(1.4);
+    opacity: 0.28;
+  }
+}
+
+/* spark sweeping along a card's top edge (compositor-only; 100cqw = card width) */
+@keyframes edge-spark {
+  0% {
+    transform: translate3d(-12px, 0, 0);
+    opacity: 0;
+  }
+  6% {
+    opacity: 0.9;
+  }
+  44% {
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate3d(100cqw, 0, 0);
+    opacity: 0;
+  }
+  100% {
+    transform: translate3d(100cqw, 0, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes glow-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(26px, -18px);
+  }
+  66% {
+    transform: translate(-12px, 14px);
+  }
+}
+
+@keyframes ribbon-drift {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(-24px, 10px);
+  }
+  66% {
+    transform: translate(10px, -6px);
   }
 }
 
@@ -422,6 +596,21 @@
   }
 }
 
+@keyframes particle-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6);
+    opacity: 0;
+  }
+  50% {
+    transform: translate3d(0, -20px, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(0, -40px, 0) scale(0.7);
+    opacity: 0;
+  }
+}
+
 @keyframes drift {
   0%,
   100% {
@@ -443,6 +632,7 @@
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
