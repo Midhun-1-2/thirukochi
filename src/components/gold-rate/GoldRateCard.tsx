@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, animate, motion, useMotionValue, useMotionValueEvent } from 'framer-motion'
 import { ArrowDownRight, ArrowUpRight, RefreshCw, WifiOff } from 'lucide-react'
 import type { GoldRateData } from '@/data'
@@ -21,6 +21,9 @@ import { GoldRateSelector } from './GoldRateSelector'
    so a live feed can replace the mock without UI changes.
 ------------------------------------------------------------------- */
 
+/** Auto-cycle the weight/purity tabs when the member hasn't touched them. */
+const AUTO_CYCLE_MS = 3800
+
 interface GoldRateCardProps {
   status: GoldRateStatus
   data: GoldRateData | null
@@ -34,7 +37,8 @@ export function GoldRateCard({ status, data, fromCache, onRetry, className }: Go
   const [selectedId, setSelectedId] = useState<string>('')
   const [interacted, setInteracted] = useState(false)
   const entrance = useEntrance()
-  const rates = data?.rates ?? []
+  const reduced = useReducedMotion()
+  const rates = useMemo(() => data?.rates ?? [], [data?.rates])
   const selected = rates.find((r) => r.id === selectedId) ?? rates[0]
   // Price count-up: on the first reveal, on fresh data, or when the member switches purity.
   // (The chart draws itself in on every showing — it is CSS-only and cheap.)
@@ -44,6 +48,20 @@ export function GoldRateCard({ status, data, fromCache, onRetry, className }: Go
     setInteracted(true)
     setSelectedId(id)
   }
+
+  // Cycle 1G 22K → 8G 22K → 1G 18K → … on its own, so the card shows every
+  // rate without a click. Re-armed off `selected` itself (not a raw interval),
+  // so a manual tap just gives the loop a fresh AUTO_CYCLE_MS window from
+  // wherever the member left it, instead of switching autoplay off for good.
+  useEffect(() => {
+    if (status !== 'ready' || rates.length < 2 || reduced || !selected) return
+    const id = window.setTimeout(() => {
+      const idx = rates.findIndex((r) => r.id === selected.id)
+      const next = rates[(idx + 1) % rates.length]
+      if (next) setSelectedId(next.id)
+    }, AUTO_CYCLE_MS)
+    return () => window.clearTimeout(id)
+  }, [status, rates, reduced, selected])
 
   return (
     <GoldCard
