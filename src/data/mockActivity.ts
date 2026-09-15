@@ -1,7 +1,12 @@
 import type { ActivityItem } from './types'
 
-/** DEMO DATA — activity feed placeholders. */
-export const mockActivity: ActivityItem[] = [
+/**
+ * DEMO DATA — the informational/promotional entries in the feed
+ * (announcements, rate refreshes, offers). Scheme joins, instalments
+ * and referral credits are real, generated from live app state by
+ * `useActivityFeed` — see src/hooks/useActivityFeed.ts.
+ */
+export const mockStaticActivity: ActivityItem[] = [
   {
     id: 'a1',
     type: 'scheme',
@@ -17,20 +22,6 @@ export const mockActivity: ActivityItem[] = [
     description: "Today's 22K rate has been refreshed.",
     time: '4h ago',
     unread: true,
-  },
-  {
-    id: 'a3',
-    type: 'payment',
-    title: 'Scheme payment received',
-    description: 'Your monthly instalment was received successfully.',
-    time: 'Yesterday',
-  },
-  {
-    id: 'a4',
-    type: 'reminder',
-    title: 'Reminder: Monthly instalment due',
-    description: 'Your next instalment is due in 5 days.',
-    time: '2 days ago',
   },
   {
     id: 'a5',

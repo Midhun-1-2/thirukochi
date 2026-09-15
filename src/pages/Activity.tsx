@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { activityMockConfig, mockActivity, type ActivityType } from '@/data'
+import type { ActivityType } from '@/data'
 import { cn } from '@/lib/cn'
 import { demo } from '@/lib/demo'
 import { useEntrance } from '@/lib/entrance'
+import { useActivityFeed } from '@/hooks/useActivityFeed'
 import { luxuryEase, springSoft } from '@/lib/motion'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { PageTransition } from '@/components/motion/PageTransition'
@@ -14,6 +15,7 @@ const filters: { id: 'all' | ActivityType; label: string }[] = [
   { id: 'all', label: 'All' },
   { id: 'scheme', label: 'Schemes' },
   { id: 'payment', label: 'Payments' },
+  { id: 'referral', label: 'Referrals' },
   { id: 'rate', label: 'Gold rate' },
   { id: 'reminder', label: 'Reminders' },
   { id: 'offer', label: 'Offers' },
@@ -22,7 +24,8 @@ const filters: { id: 'all' | ActivityType; label: string }[] = [
 export default function Activity() {
   const [filter, setFilter] = useState<(typeof filters)[number]['id']>('all')
   const entrance = useEntrance()
-  const all = activityMockConfig.simulateEmpty || demo.emptyActivity ? [] : mockActivity
+  const feed = useActivityFeed()
+  const all = demo.emptyActivity ? [] : feed
   const items = filter === 'all' ? all : all.filter((a) => a.type === filter)
 
   return (

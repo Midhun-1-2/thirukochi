@@ -55,7 +55,7 @@ export interface JoinedScheme extends SchemeSelection {
   referenceNo: string
 }
 
-export type ActivityType = 'scheme' | 'payment' | 'rate' | 'reminder' | 'offer'
+export type ActivityType = 'scheme' | 'payment' | 'referral' | 'rate' | 'reminder' | 'offer'
 
 export interface ActivityItem {
   id: string

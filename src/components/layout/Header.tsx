@@ -8,7 +8,7 @@ import { IconButton } from '@/components/ui/IconButton'
 import { useToast } from '@/components/ui/Toast'
 import { useAuth } from '@/context/AuthContext'
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard'
-import { mockActivity } from '@/data'
+import { useActivityFeed } from '@/hooks/useActivityFeed'
 import { cn } from '@/lib/cn'
 import { greeting, initials } from '@/lib/format'
 import { luxuryEase, springSnappy } from '@/lib/motion'
@@ -113,8 +113,9 @@ function NotificationsMenu() {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
-  const items = mockActivity.slice(0, 3)
-  const unread = mockActivity.filter((a) => a.unread).length
+  const feed = useActivityFeed()
+  const items = feed.slice(0, 3)
+  const unread = feed.filter((a) => a.unread).length
 
   useEffect(() => {
     if (!open) return

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { BadgeCheck, Bell, Coins, Gem, Sparkles, type LucideIcon } from 'lucide-react'
+import { BadgeCheck, Bell, Coins, Gem, Gift, Sparkles, type LucideIcon } from 'lucide-react'
 import { routes } from '@/app/navigation'
 import type { ActivityItem, ActivityType } from '@/data'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -27,6 +27,7 @@ interface ActivityFeedProps {
 const typeIcon: Record<ActivityType, LucideIcon> = {
   scheme: Gem,
   payment: BadgeCheck,
+  referral: Gift,
   rate: Coins,
   reminder: Bell,
   offer: Sparkles,

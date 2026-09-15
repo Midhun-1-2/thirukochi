@@ -1,9 +1,9 @@
-import { ArrowRight, Coins, Receipt, Wallet as WalletIcon } from 'lucide-react'
+import { ArrowRight, Coins, Gift, Receipt, Wallet as WalletIcon } from 'lucide-react'
 import { routes } from '@/app/navigation'
 import { useSchemeFlow } from '@/context/SchemeContext'
-import { getScheme, mockPayments, mockWallet, paymentsMockConfig } from '@/data'
+import { getScheme, mockPayments, mockReferralCredits, mockWallet, paymentsMockConfig, type ReferralCredit } from '@/data'
 import { cn } from '@/lib/cn'
-import { formatINR } from '@/lib/format'
+import { formatDate, formatINR } from '@/lib/format'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { PageTransition } from '@/components/motion/PageTransition'
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer'
@@ -19,10 +19,16 @@ import { PaymentRow } from './Payments'
    recent transactions fit a single phone screen.
 ------------------------------------------------------------------- */
 
+type LedgerEntry = { date: string } & ({ kind: 'payment'; payment: (typeof mockPayments)[number] } | { kind: 'referral'; credit: ReferralCredit })
+
 export default function Wallet() {
   const { joined } = useSchemeFlow()
   const monthly = joined.reduce((sum, j) => sum + j.amount, 0)
-  const recent = (paymentsMockConfig.simulateEmpty ? [] : mockPayments).filter((p) => p.status === 'paid').slice(0, 3)
+  const paid = paymentsMockConfig.simulateEmpty ? [] : mockPayments.filter((p) => p.status === 'paid')
+  const credited = mockReferralCredits.filter((c) => c.status === 'credited')
+  const recent: LedgerEntry[] = [...paid.map((payment) => ({ kind: 'payment' as const, date: payment.date, payment })), ...credited.map((credit) => ({ kind: 'referral' as const, date: credit.date, credit }))]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 3)
 
   return (
     <PageTransition>
@@ -42,11 +48,16 @@ export default function Wallet() {
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-2.5 sm:mt-6 sm:gap-4">
-                  <Stat label="Gold balance">
-                    <span className="text-gold-bright">{mockWallet.goldGrams.toFixed(3)}</span> <span className="text-[15px] text-gold-muted sm:text-[18px]">g</span>
+                <div className="mt-4 grid grid-cols-3 gap-2 sm:mt-6 sm:gap-4">
+                  <Stat label="Gold" compact>
+                    <span className="text-gold-bright">{mockWallet.goldGrams.toFixed(3)}</span> <span className="text-[13px] text-gold-muted sm:text-[16px]">g</span>
                   </Stat>
-                  <Stat label="Indicative value">{formatINR(mockWallet.valueINR, { whole: true })}</Stat>
+                  <Stat label="Value" compact>
+                    {formatINR(mockWallet.valueINR, { whole: true })}
+                  </Stat>
+                  <Stat label="Referral" compact>
+                    <span className="text-gold-bright">{formatINR(mockWallet.referralEarningsINR, { whole: true })}</span>
+                  </Stat>
                 </div>
 
                 <GoldDivider className="my-4 sm:my-5" />
@@ -92,9 +103,13 @@ export default function Wallet() {
                 <EmptyState icon={<Receipt size={20} strokeWidth={1.5} aria-hidden />} title="No transactions yet" text="Your instalment history will be listed here." inline />
               ) : (
                 <ol className="divide-y divide-[rgba(249,223,50,0.08)]" aria-label="Recent transactions">
-                  {recent.map((p, i) => (
-                    <PaymentRow key={p.id} payment={p} compact className={cn(i === 2 && 'hidden sm:flex')} />
-                  ))}
+                  {recent.map((entry, i) =>
+                    entry.kind === 'payment' ? (
+                      <PaymentRow key={entry.payment.id} payment={entry.payment} compact className={cn(i === 2 && 'hidden sm:flex')} />
+                    ) : (
+                      <ReferralRow key={entry.credit.id} credit={entry.credit} className={cn(i === 2 && 'hidden sm:flex')} />
+                    ),
+                  )}
                 </ol>
               )}
             </GoldCard>
@@ -105,12 +120,38 @@ export default function Wallet() {
   )
 }
 
-function Stat({ label, children }: { label: string; children: React.ReactNode }) {
+function Stat({ label, children, compact }: { label: string; children: React.ReactNode; compact?: boolean }) {
   return (
-    <div className="min-w-0 rounded-[14px] bg-[rgba(13,0,0,0.35)] px-3 py-2.5 sm:p-4">
-      <p className="truncate text-[10px] uppercase tracking-[0.16em] text-cream-faint sm:text-[11px]">{label}</p>
-      <p className="mt-1 truncate font-display text-[24px] font-medium leading-none text-cream lining-nums sm:text-[34px]">{children}</p>
+    <div className="min-w-0 rounded-[14px] bg-[rgba(13,0,0,0.35)] px-2.5 py-2.5 sm:p-4">
+      <p className="truncate text-[9px] uppercase tracking-[0.14em] text-cream-faint sm:text-[11px]">{label}</p>
+      <p
+        className={cn(
+          'mt-1 truncate font-display font-medium leading-none text-cream lining-nums',
+          compact ? 'text-[16px] sm:text-[24px]' : 'text-[24px] sm:text-[34px]',
+        )}
+      >
+        {children}
+      </p>
     </div>
+  )
+}
+
+/** One referral-bonus row, styled to match PaymentRow's compact ledger entry. */
+function ReferralRow({ credit, className }: { credit: ReferralCredit; className?: string }) {
+  return (
+    <li className={cn('flex items-center gap-3 py-2', className)}>
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-gold-bright/50 bg-[rgba(249,223,50,0.08)] text-gold-bright sm:size-10">
+        <Gift size={16} strokeWidth={1.7} aria-hidden />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-[13.5px] font-medium text-cream sm:text-[14px]">Referral bonus</span>
+        <span className="block truncate text-[11.5px] text-cream-faint sm:text-[12px]">{credit.friendName} joined</span>
+      </span>
+      <span className="shrink-0 text-right">
+        <span className="block font-display text-[15px] font-medium text-gold-bright lining-nums sm:text-[17px]">+{formatINR(credit.amount, { whole: true })}</span>
+        <span className="block text-[11px] text-cream-faint lining-nums">{formatDate(credit.date)}</span>
+      </span>
+    </li>
   )
 }
 

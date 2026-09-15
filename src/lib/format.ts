@@ -63,3 +63,29 @@ export function greeting(date = new Date()): string {
   if (h < 17) return 'Good afternoon'
   return 'Good evening'
 }
+
+/** Relative label for a past ISO date/datetime: "2h ago", "Yesterday", "5 days ago", or a calendar date once it's old. */
+export function formatRelativeTime(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  const minutes = Math.round(diffMs / 60_000)
+  if (minutes < 1) return 'Just now'
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.round(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.round(hours / 24)
+  if (days === 1) return 'Yesterday'
+  if (days < 7) return `${days} days ago`
+  if (days < 14) return '1 week ago'
+  if (days < 30) return `${Math.round(days / 7)} weeks ago`
+  return formatDate(iso)
+}
+
+/** Label for a future ISO date: "Due tomorrow", "Due in 5 days", or a calendar date once it's far out. */
+export function formatDueIn(iso: string): string {
+  const diffMs = new Date(iso).getTime() - Date.now()
+  const days = Math.round(diffMs / 86_400_000)
+  if (days <= 0) return 'Due today'
+  if (days === 1) return 'Due tomorrow'
+  if (days < 14) return `Due in ${days} days`
+  return `Due ${formatDate(iso)}`
+}

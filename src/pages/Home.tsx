@@ -1,6 +1,7 @@
 import { useAuth } from '@/context/AuthContext'
 import { useGoldRate } from '@/hooks/useGoldRate'
-import { activityMockConfig, mockActivity, mockPromos, mockSocial } from '@/data'
+import { useActivityFeed } from '@/hooks/useActivityFeed'
+import { mockPromos, mockSocial } from '@/data'
 import { demo } from '@/lib/demo'
 import { greeting } from '@/lib/format'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -31,7 +32,8 @@ const reveal = (i: number) => ({ '--reveal-delay': `${i * STEP}ms` }) as React.C
 export default function Home() {
   const { user } = useAuth()
   const rate = useGoldRate()
-  const activity = activityMockConfig.simulateEmpty || demo.emptyActivity ? [] : mockActivity
+  const feed = useActivityFeed()
+  const activity = demo.emptyActivity ? [] : feed
   const firstName = (user?.name ?? 'Member').split(' ')[0]
 
   return (
