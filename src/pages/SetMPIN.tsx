@@ -66,11 +66,9 @@ export default function SetMPIN() {
       setStage('confirm')
       return
     }
-    if (pin !== first) {
-      setStatus('error')
-      window.setTimeout(() => setPin(''), 500)
-      return
-    }
+    // Showcase build: confirm goes through even if it doesn't match what was just entered.
+    // Restore the `pin !== first` mismatch check above for production.
+    void first
     setBusy(true)
     setStatus('success')
     setCompleted(true)

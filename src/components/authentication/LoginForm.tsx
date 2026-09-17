@@ -19,10 +19,12 @@ import { Captcha } from './Captcha'
    LoginForm — phone + MPIN (toggle) + numeric captcha → Login
 ------------------------------------------------------------------- */
 
+// Showcase build: Login goes through with anything, even empty fields — no format or
+// captcha-match check. Restore the stricter regex/min-length rules above for production.
 const loginSchema = z.object({
-  phone: z.string().trim().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
-  mpin: z.string().regex(/^\d{4}$/, 'Enter your 4-digit MPIN'),
-  captcha: z.string().trim().min(1, 'Please enter the captcha'),
+  phone: z.string(),
+  mpin: z.string(),
+  captcha: z.string(),
 })
 
 export type LoginValues = z.infer<typeof loginSchema>
@@ -45,7 +47,6 @@ export function LoginForm({ defaultPhone = '', onSubmit, onSuccess }: LoginFormP
   const {
     register,
     handleSubmit,
-    setError,
     resetField,
     formState: { errors },
   } = useForm<LoginValues>({
@@ -61,11 +62,6 @@ export function LoginForm({ defaultPhone = '', onSubmit, onSuccess }: LoginFormP
 
   const submit = handleSubmit(async (values) => {
     setFormError(null)
-    if (values.captcha !== captchaCode) {
-      refreshCaptcha()
-      setError('captcha', { message: 'Captcha does not match. Please try again.' })
-      return
-    }
     setPhase('submitting')
     const result = await onSubmit(values)
     if (result.ok) {

@@ -71,9 +71,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const verifyOtp = useCallback<AuthContextValue['verifyOtp']>(async (code) => {
     await wait(mockAuthConfig.latencyMs)
-    const ok = code === mockAuthConfig.otp
-    if (ok) setState((s) => (s.registration ? { ...s, registration: { ...s.registration, otpVerified: true } } : s))
-    return ok
+    // Showcase build: any code (even blank) verifies. Restore the `code === mockAuthConfig.otp`
+    // check above for production.
+    void code
+    setState((s) => (s.registration ? { ...s, registration: { ...s.registration, otpVerified: true } } : s))
+    return true
   }, [])
 
   const resendOtp = useCallback(async () => {
@@ -98,20 +100,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback<AuthContextValue['login']>(
     async ({ phone, mpin }) => {
       await wait(mockAuthConfig.latencyMs)
+      // Showcase build: any phone + MPIN signs in, even blank fields. A number already
+      // registered in this demo keeps its own name; anything else walks in as the demo
+      // member. Restore the match/MPIN checks above for production.
+      void mpin
       const demo = mockAuthConfig.demoUser
-      const candidates: StoredAccount[] = []
-      if (state.account) candidates.push(state.account)
-      candidates.push({
+      const match = state.account?.phone === phone ? state.account : null
+      const account: StoredAccount = match ?? {
         name: demo.name,
-        phone: demo.phone,
+        phone: phone || demo.phone,
         mpin: demo.mpin,
         referralCode: mockProfile.referralCode,
         memberSince: mockProfile.memberSince,
-      })
-      const match = candidates.find((c) => c.phone === phone)
-      if (!match) return { ok: false, reason: 'We could not find an account with this number.' }
-      if (match.mpin !== mpin) return { ok: false, reason: 'Incorrect MPIN. Please try again.' }
-      setState((s) => ({ ...s, account: match, session: { phone: match.phone } }))
+      }
+      setState((s) => ({ ...s, account, session: { phone: account.phone } }))
       return { ok: true }
     },
     [state.account],

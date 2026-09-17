@@ -28,7 +28,8 @@ export default function VerifyOTP() {
   if (!registration) return <Navigate to={routes.register} replace />
 
   const submit = async (value = code) => {
-    if (value.length !== mockAuthConfig.otpLength || busy) return
+    // Showcase build: verify goes through with any code, even blank — no length gate.
+    if (busy) return
     setBusy(true)
     const ok = await verifyOtp(value)
     if (ok) {
@@ -94,7 +95,7 @@ export default function VerifyOTP() {
           </p>
         </div>
 
-        <GoldButton type="submit" size="lg" fullWidth loading={busy && status !== 'error'} loadingText="Verifying…" disabled={code.length !== mockAuthConfig.otpLength}>
+        <GoldButton type="submit" size="lg" fullWidth loading={busy && status !== 'error'} loadingText="Verifying…">
           {status === 'success' ? 'Verified' : 'Verify'}
         </GoldButton>
 

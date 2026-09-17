@@ -13,17 +13,11 @@ import { staggerContainer, staggerItem } from '@/lib/motion'
    RegistrationForm — Full name + Indian mobile number → Get OTP
 ------------------------------------------------------------------- */
 
+// Showcase build: Get OTP goes through with anything, even empty fields — no format check.
+// Restore the stricter min-length/regex rules above for production.
 const registrationSchema = z.object({
-  fullName: z
-    .string()
-    .trim()
-    .min(2, 'Please enter your full name')
-    .max(60, 'That name looks a little long')
-    .regex(/^[A-Za-z][A-Za-z .'-]*$/, 'Please use letters only'),
-  phone: z
-    .string()
-    .trim()
-    .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number'),
+  fullName: z.string(),
+  phone: z.string(),
 })
 
 export type RegistrationValues = z.infer<typeof registrationSchema>
