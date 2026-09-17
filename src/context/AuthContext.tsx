@@ -87,7 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       if (!s.registration) return s
       const account: StoredAccount = {
-        name: s.registration.name,
+        // Showcase build: blank name falls back to the demo member's name.
+        name: s.registration.name.trim() || mockAuthConfig.demoUser.name,
         phone: s.registration.phone,
         mpin,
         referralCode: mockProfile.referralCode,
